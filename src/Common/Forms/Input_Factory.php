@@ -3,9 +3,9 @@ namespace TEC\Common\Forms;
 
 use TEC\Common\Forms\Inputs\Abstract_Input;
 
-class InputFactory {
+class Input_Factory {
 
-	protected $allowed_types = [
+	protected static $allowed_types = [
 		// buttons
 		'button'   => true,
 		'submit'   => true,
@@ -36,7 +36,7 @@ class InputFactory {
 			throw new \InvalidArgumentException( $type . ' is not an allowed input type.' );
 		}
 
-		$class = 'TEC\\Common\\Forms\\Input\\' . $type;
+		$class = 'TEC\\Common\\Forms\\Inputs\\' . ucfirst( $type );
 		return new $class($name, $value, $attributes);
 	}
 
@@ -57,12 +57,12 @@ class InputFactory {
 	 */
 	public static function from_array( array $array ): Abstract_Input {
 		// Bail if no type set.
-		if ( ! isset( $args['type'] ) ) {
+		if ( ! isset( $array['type'] ) ) {
 			throw new \InvalidArgumentException( 'Type property is required.');
 		}
 
 		// Bail if no name set.
-		if ( ! isset( $args['name'] ) ) {
+		if ( ! isset( $array['name'] ) ) {
 			throw new \InvalidArgumentException( 'Name property is required.');
 		}
 

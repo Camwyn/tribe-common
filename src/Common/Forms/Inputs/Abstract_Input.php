@@ -5,12 +5,12 @@ namespace TEC\Common\Forms\Inputs;
  * ABstract input class.
  */
 abstract class Abstract_Input {
-    protected $type;
-	protected $name;
-    protected $value;
-	protected $label;
-    protected $attributes = [];
-	protected $allowed_attributes = [
+    protected static $type;
+	protected static $name;
+    protected static $value;
+	protected static $label;
+    protected static $attributes = [];
+	protected static $allowed_attributes = [
 		'accept',
 		'alt',
 		'autocomplete',
@@ -57,13 +57,13 @@ abstract class Abstract_Input {
 	 */
     public function __construct( string $name, $value = null, ?array $attributes = [] ) {
 		if ( isset( $attributes['label'] ) ) {
-			$this->label = $attributes['label'];
+			static::$label = $attributes['label'];
 			unset( $attributes['label'] );
 		}
 
-        $this->attributes = $attributes;
-        $this->name       = $name;
-        $this->value      = $value;
+        static::$attributes = $attributes;
+        static::$name       = $name;
+        static::$value      = $value;
     }
 
 	/**
@@ -113,6 +113,10 @@ abstract class Abstract_Input {
         return static::$value;
     }
 
+	public static function get_attributes(): array {
+		return static::$attributes;
+	}
+
 	/**
 	 * Sets the input's value.
 	 *
@@ -123,7 +127,7 @@ abstract class Abstract_Input {
 	 * @return void
 	 */
     public function set_value( $value ): void {
-        $this->value = $value;
+        static::$value = $value;
     }
 
 	/**
@@ -137,11 +141,11 @@ abstract class Abstract_Input {
 	 * @return void
 	 */
     public function set_attribute( string $name, string $value ): void {
-		if ( ! in_array( $name, $this->allowed_attributes ) ) {
+		if ( ! in_array( $name, static::$allowed_attributes ) ) {
 			return;
 		}
 
-        $this->attributes[$name] = $value;
+        static::$attributes[$name] = $value;
     }
 
 	/**
@@ -172,7 +176,7 @@ abstract class Abstract_Input {
 		array_filter(
 			static::$attributes,
 			function( $v, $k ) {
-				return in_array( $k, $this->allowed_attributes );
+				return in_array( $k, static::$allowed_attributes );
 			},
 			ARRAY_FILTER_USE_BOTH
 		);
@@ -192,6 +196,27 @@ abstract class Abstract_Input {
 				array_values( static::$attributes )
 			)
 		);
+	}
+
+	public function get_parent(): Abstract_Input {
+		return isset( self::$attributes[ 'parent' ] ) ? self::$attributes[ 'parent' ] : false ;
+	}
+
+	/**
+	 * Returns the value of the parent input, which is the value of the input group.
+	 *
+	 * @since TBD
+	 *
+	 * @return string
+	 */
+	protected function get_parent_value(): string {
+		$parent = $this->get_parent();
+		if ( $parent instanceof Select ) {
+			// For select inputs, we need to get the value of the selected option.
+			return $parent->get_selected_option_value();
+		}
+
+		return $parent->get_value();
 	}
 
 	/**
