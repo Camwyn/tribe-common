@@ -8,7 +8,7 @@ namespace TEC\Common\Settings;
  *
  * Handles the registration and creation of our settings and settings pages.
  */
-class Settings extends \tad_DI52_ServiceProvider {
+class Provider extends \tad_DI52_ServiceProvider {
 	/**
 	 * The original option cache key for backwards compatibility.
 	 *
@@ -76,8 +76,8 @@ class Settings extends \tad_DI52_ServiceProvider {
 	 *
 	 */
 	public function register() {
-		$this->add_hooks();
 
+		tribe_singleton( Settings_Page::class, Settings_Page::class );
 		// Load multisite defaults.
 		if ( is_multisite() ) {
 			$tribe_events_mu_defaults = [];
@@ -89,6 +89,8 @@ class Settings extends \tad_DI52_ServiceProvider {
 
 			self::$tribe_events_mu_defaults = apply_filters( 'tribe_events_mu_defaults', $tribe_events_mu_defaults );
 		}
+
+		$this->add_hooks();
 	}
 
 	/**

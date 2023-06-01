@@ -34,7 +34,7 @@ class Settings_Page {
 	 *
 	 * @return void
 	 */
-	public function init_options() {
+	public function init_settings() {
 
 	}
 
